@@ -1,3 +1,6 @@
 [submodule "libs/aurora"]
 	path = libs/aurora
 	url = https://github.com/encounter/aurora.git
+[submodule "libs/borealis"]
+	path = libs/borealis
+	url = https://github.com/encounter/borealis.git

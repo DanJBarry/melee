@@ -49,6 +49,18 @@ if(MELEE_ENABLE_AURORA)
     set(AURORA_ENABLE_CARD OFF CACHE BOOL "" FORCE)
     set(AURORA_ENABLE_THP OFF CACHE BOOL "" FORCE)
     add_subdirectory(libs/aurora aurora EXCLUDE_FROM_ALL)
+    set(BOREALIS_ENABLE_CLI OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_HTTP OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_WEBSOCKET OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_NET OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_UPDATE OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_CRASH OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_DATA OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_IO OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_FILE_SELECT OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_DISC OFF CACHE BOOL "" FORCE)
+    set(BOREALIS_ENABLE_DISCORD OFF CACHE BOOL "" FORCE)
+    add_subdirectory(libs/borealis borealis EXCLUDE_FROM_ALL)
 
     add_library(melee-aurora INTERFACE)
     target_link_libraries(melee-aurora INTERFACE
@@ -58,6 +70,7 @@ if(MELEE_ENABLE_AURORA)
         aurora::pad
         aurora::vi
         aurora::gx
+        borealis::core
     )
 endif()
 

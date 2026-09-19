@@ -1,5 +1,6 @@
 #include <aurora/aurora.h>
 #include <aurora/event.h>
+#include <borealis/app_info.hpp>
 
 #include "melee_platform_loop.h"
 
@@ -30,6 +31,13 @@ int main(int argc, char** argv) {
       .imGuiInitCallback = nullptr,
       .mem1Size = 0,
       .mem2Size = 0,
+  };
+
+  constexpr borealis::AppInfo AppInfo{
+    .orgName = "Dan Barry",
+    .appName = "melee-platform",
+    .githubOwner = "DanJBarry",
+    .githubRepo = "melee",
   };
 
   aurora_initialize(argc, argv, &config);
