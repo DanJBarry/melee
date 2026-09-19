@@ -83,8 +83,8 @@ if(MELEE_ENABLE_AURORA)
 
     target_include_directories(melee-platform PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libs
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/dolphin/include
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/borealis/include
         src
     )
 
@@ -104,7 +104,8 @@ endif()
 
 target_include_directories(melee PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/libs
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/dolphin/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/borealis/include
     src
 )
 

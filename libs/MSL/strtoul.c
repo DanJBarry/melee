@@ -5,7 +5,6 @@
 #include "limits.h"
 #include "stdio.h"
 #include "stdlib.h"
-#include <dolphin/types.h>
 
 enum scan_states {
     start = 0x01,

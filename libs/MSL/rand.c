@@ -1,5 +1,4 @@
 #include "stdlib.h"
-#include <dolphin/types.h>
 
 static u32 next = 1;
 

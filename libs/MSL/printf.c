@@ -8,7 +8,6 @@
 #include "stdlib.h"
 #include "string.h"
 #include "wchar.h"
-#include <dolphin/types.h>
 
 enum justification_options {
     left_justification,
