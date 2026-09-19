@@ -71,6 +71,31 @@ sudo xattr -rd com.apple.quarantine '/Applications/Wine Crossover.app'
   ninja
   ```
 
+## Native Aurora runtime
+
+Requirements:
+
+- CMake 3.25 or newer
+- Ninja
+- C++20-compatible host compiler and standard library
+- Aurora submodule initialized:
+  ```sh
+  git submodule update --init --recursive
+  ```
+
+Configure and build from the repository root:
+
+```sh
+cmake -S . -B build-platform -G Ninja -DMELEE_ENABLE_AURORA=ON
+cmake --build build-platform --target melee-platform
+```
+
+Launch the minimal host runtime:
+
+```sh
+./build-platform/melee-platform
+```
+
 # Tooling
 
 We use Python for our command line tooling. It is recommended that you use a [virtual environment](https://docs.python.org/3/library/venv.html).

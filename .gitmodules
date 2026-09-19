@@ -1,0 +1,3 @@
+[submodule "libs/aurora"]
+	path = libs/aurora
+	url = https://github.com/encounter/aurora.git
