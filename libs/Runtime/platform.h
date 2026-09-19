@@ -3,8 +3,7 @@
 
 #include <stdbool.h> // IWYU pragma: export
 #include <stddef.h>  // IWYU pragma: export
-
-#include <dolphin/types.h> // IWYU pragma: export
+#include <sys/types.h> // IWYU pragma: export
 
 /// @typedef bool
 /// @note Dolphin's #BOOL macro is not supported.
@@ -27,8 +26,12 @@
 /// The underlying type of an @c enum, used as a placeholder
 typedef int enum_t;
 
-/// Signed variant of ::size_t
-typedef signed int ssize_t;
+/// Signed variant of ::size_t.
+/// Host libc defines this on modern platforms; do not redefine it with a
+/// conflicting type width.
+#if !defined(__ssize_t_defined) && !defined(_SSIZE_T) && !defined(__ssize_t)
+typedef signed long ssize_t;
+#endif
 
 /// A @c void callback with no arguments.
 typedef void (*Event)(void);
