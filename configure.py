@@ -359,6 +359,7 @@ cflags_trk = [
 
 includes_base = [
     "src",
+    "libs",
     "libs/MSL",
     "libs/dolphin/include",
     f"build/{config.version}/include",
@@ -369,7 +370,7 @@ config.linker_version = "GC/1.3.2"
 
 # Native compiler flags
 
-clang_includes = ["src"]
+clang_includes = ["src", "libs"]
 
 clang_system_includes = [
     "libs/MSL",
@@ -527,6 +528,7 @@ def RuntimeLib(lib_name: str, objects: Objects) -> Library:
     return Lib(
         lib_name,
         objects,
+        src_dir="libs",
         cflags=cflags_runtime,
         fix_epilogue=False,
         category="runtime",
@@ -537,6 +539,7 @@ def Libc(lib_name: str, objects: Objects) -> Library:
     return Lib(
         lib_name,
         objects,
+        src_dir="libs",
         cflags=cflags_libc,
         inline="deferred,auto",
         fix_epilogue=False,
@@ -548,6 +551,7 @@ def TRKLib(lib_name: str, objects: Objects) -> Library:
     return Lib(
         lib_name,
         objects,
+        src_dir="libs",
         cflags=cflags_trk,
         inline="on,noauto",
         fix_epilogue=False,

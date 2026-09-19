@@ -42,7 +42,6 @@ add_library(melee STATIC ${SOURCES})
 target_compile_definitions(melee PRIVATE TARGET_PC bool=int)
 
 if(MELEE_ENABLE_AURORA)
-    set(AURORA_SDL3_LINKAGE shared)
     set(AURORA_ENABLE_EXAMPLES OFF CACHE BOOL "" FORCE)
     set(AURORA_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
     set(AURORA_ENABLE_GX ON CACHE BOOL "" FORCE)
@@ -62,22 +61,41 @@ if(MELEE_ENABLE_AURORA)
     )
 endif()
 
-add_executable(melee-platform
-    libs/platform/melee_platform.cpp
-)
+if(MELEE_ENABLE_AURORA)
+    add_executable(melee-platform
+        libs/platform/melee_platform.cpp
+        libs/platform/melee_platform_loop.cpp
+    )
+    target_link_libraries(melee-platform PRIVATE melee-aurora)
 
-target_link_libraries(melee-platform PRIVATE melee melee-aurora)
+    target_include_directories(melee-platform PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/dolphin/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
+        src
+    )
+
+    include(CTest)
+    if(BUILD_TESTING)
+        add_executable(melee-platform-loop-test
+            libs/platform/melee_platform_loop.cpp
+            libs/platform/melee_platform_loop_test.cpp
+        )
+        target_link_libraries(melee-platform-loop-test PRIVATE aurora::core)
+        target_include_directories(melee-platform-loop-test PRIVATE
+            ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
+        )
+        add_test(NAME melee-platform-loop COMMAND melee-platform-loop-test)
+    endif()
+endif()
 
 target_include_directories(melee PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/dolphin/include
-    src
-)
-
-target_include_directories(melee-platform PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/dolphin/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
     src
 )
 
 install(TARGETS melee LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}")
-install(TARGETS melee-platform RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+if(MELEE_ENABLE_AURORA)
+    install(TARGETS melee-platform RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+endif()

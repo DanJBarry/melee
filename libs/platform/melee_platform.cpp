@@ -1,7 +1,7 @@
 #include <aurora/aurora.h>
 #include <aurora/event.h>
 
-#include <cstdlib>
+#include "melee_platform_loop.h"
 
 int main(int argc, char** argv) {
   const AuroraConfig config = {
@@ -33,26 +33,9 @@ int main(int argc, char** argv) {
   };
 
   aurora_initialize(argc, argv, &config);
+  AuroraShutdownGuard shutdownGuard(aurora_shutdown);
 
-  int frames = 0;
-  while (frames < 3) {
-    const AuroraEvent* event = aurora_update();
-    while (event != nullptr && event->type != AURORA_NONE) {
-      if (event->type == AURORA_EXIT) {
-        aurora_shutdown();
-        return 0;
-      }
-      ++event;
-    }
+  run_aurora_frame_loop(aurora_update, aurora_begin_frame, aurora_end_frame);
 
-    if (!aurora_begin_frame()) {
-      continue;
-    }
-
-    aurora_end_frame();
-    ++frames;
-  }
-
-  aurora_shutdown();
   return 0;
 }
