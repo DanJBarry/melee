@@ -4,8 +4,6 @@ project(melee-native LANGUAGES C CXX)
 
 include(GNUInstallDirs)
 
-option(MELEE_ENABLE_AURORA "Configure Aurora host compatibility targets" ON)
-
 if (NOT CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU|MSVC")
     message(FATAL_ERROR "Aurora host runtime requires a supported C++20 desktop toolchain (Clang, GCC, or MSVC).")
 endif()
@@ -41,65 +39,73 @@ endforeach()
 add_library(melee STATIC ${SOURCES})
 target_compile_definitions(melee PRIVATE TARGET_PC bool=int)
 
-if(MELEE_ENABLE_AURORA)
-    set(AURORA_ENABLE_EXAMPLES OFF CACHE BOOL "" FORCE)
-    set(AURORA_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
-    set(AURORA_ENABLE_GX ON CACHE BOOL "" FORCE)
-    set(AURORA_ENABLE_DVD OFF CACHE BOOL "" FORCE)
-    set(AURORA_ENABLE_CARD OFF CACHE BOOL "" FORCE)
-    set(AURORA_ENABLE_THP OFF CACHE BOOL "" FORCE)
-    add_subdirectory(libs/aurora aurora EXCLUDE_FROM_ALL)
-    set(BOREALIS_ENABLE_CLI OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_HTTP OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_WEBSOCKET OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_NET OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_UPDATE OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_CRASH OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_DATA OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_IO OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_FILE_SELECT OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_DISC OFF CACHE BOOL "" FORCE)
-    set(BOREALIS_ENABLE_DISCORD OFF CACHE BOOL "" FORCE)
-    add_subdirectory(libs/borealis borealis EXCLUDE_FROM_ALL)
+set(AURORA_ENABLE_EXAMPLES OFF CACHE BOOL "" FORCE)
+set(AURORA_ENABLE_TESTS OFF CACHE BOOL "" FORCE)
+set(AURORA_ENABLE_GX ON CACHE BOOL "" FORCE)
+set(AURORA_ENABLE_DVD OFF CACHE BOOL "" FORCE)
+set(AURORA_ENABLE_CARD OFF CACHE BOOL "" FORCE)
+set(AURORA_ENABLE_THP OFF CACHE BOOL "" FORCE)
+add_subdirectory(libs/aurora aurora EXCLUDE_FROM_ALL)
+set(BOREALIS_ENABLE_CLI OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_HTTP OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_WEBSOCKET OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_NET OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_UPDATE OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_CRASH OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_DATA OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_IO ON CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_FILE_SELECT OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_DISC OFF CACHE BOOL "" FORCE)
+set(BOREALIS_ENABLE_DISCORD OFF CACHE BOOL "" FORCE)
+add_subdirectory(libs/borealis borealis EXCLUDE_FROM_ALL)
 
-    add_library(melee-aurora INTERFACE)
-    target_link_libraries(melee-aurora INTERFACE
-        aurora::core
-        aurora::main
-        aurora::os
-        aurora::pad
-        aurora::vi
-        aurora::gx
-        borealis::core
-    )
-endif()
+add_library(melee-aurora INTERFACE)
+target_link_libraries(melee-aurora INTERFACE
+    aurora::core
+    aurora::main
+    aurora::os
+    aurora::pad
+    aurora::vi
+    aurora::gx
+    borealis::core
+    borealis::io
+    borealis::log
+)
 
-if(MELEE_ENABLE_AURORA)
-    add_executable(melee-platform
-        libs/platform/melee_platform.cpp
+add_executable(melee-platform
+    libs/platform/melee_platform.cpp
+    libs/platform/melee_platform_adapter.cpp
+    libs/platform/melee_platform_loop.cpp
+)
+target_link_libraries(melee-platform PRIVATE melee-aurora)
+target_include_directories(melee-platform PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs/borealis/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/libs
+    src
+)
+
+include(CTest)
+if(BUILD_TESTING)
+    add_executable(melee-platform-loop-test
         libs/platform/melee_platform_loop.cpp
+        libs/platform/melee_platform_loop_test.cpp
     )
-    target_link_libraries(melee-platform PRIVATE melee-aurora)
-
-    target_include_directories(melee-platform PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs
+    add_executable(melee-platform-adapter-test
+        libs/platform/melee_platform_adapter.cpp
+        libs/platform/melee_platform_adapter_test.cpp
+    )
+    target_link_libraries(melee-platform-adapter-test PRIVATE borealis::io borealis::log)
+    target_link_libraries(melee-platform-loop-test PRIVATE aurora::core)
+    target_include_directories(melee-platform-loop-test PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/libs/borealis/include
+    )
+    target_include_directories(melee-platform-adapter-test PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/libs
         src
     )
-
-    include(CTest)
-    if(BUILD_TESTING)
-        add_executable(melee-platform-loop-test
-            libs/platform/melee_platform_loop.cpp
-            libs/platform/melee_platform_loop_test.cpp
-        )
-        target_link_libraries(melee-platform-loop-test PRIVATE aurora::core)
-        target_include_directories(melee-platform-loop-test PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
-        )
-        add_test(NAME melee-platform-loop COMMAND melee-platform-loop-test)
-    endif()
+    add_test(NAME melee-platform-loop COMMAND melee-platform-loop-test)
+    add_test(NAME melee-platform-adapter COMMAND melee-platform-adapter-test)
 endif()
 
 target_include_directories(melee PRIVATE

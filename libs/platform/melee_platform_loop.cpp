@@ -1,11 +1,13 @@
 #include "melee_platform_loop.h"
 
-int run_aurora_frame_loop(AuroraUpdateFunction update,
-                          AuroraBeginFrameFunction beginFrame,
-                          AuroraEndFrameFunction endFrame) {
+int run_aurora_frame_loop(const FrameLoopCallbacks& callbacks) {
   constexpr int kMaxFrameAttempts = 3;
+  if (callbacks.bootstrap != nullptr && !callbacks.bootstrap()) {
+    return 1;
+  }
+
   for (int frameAttempt = 0; frameAttempt < kMaxFrameAttempts; ++frameAttempt) {
-    const AuroraEvent* event = update();
+    const AuroraEvent* event = callbacks.update();
     bool exiting = false;
     while (event != nullptr && event->type != AURORA_NONE) {
       if (event->type == AURORA_EXIT) {
@@ -19,11 +21,14 @@ int run_aurora_frame_loop(AuroraUpdateFunction update,
       break;
     }
 
-    if (!beginFrame()) {
+    if (!callbacks.beginFrame()) {
       continue;
     }
 
-    endFrame();
+    if (callbacks.tick != nullptr) {
+      callbacks.tick();
+    }
+    callbacks.endFrame();
   }
 
   return 0;

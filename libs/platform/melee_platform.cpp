@@ -2,6 +2,7 @@
 #include <aurora/event.h>
 #include <borealis/app_info.hpp>
 
+#include "melee_platform_adapter.h"
 #include "melee_platform_loop.h"
 
 int main(int argc, char** argv) {
@@ -43,7 +44,17 @@ int main(int argc, char** argv) {
   aurora_initialize(argc, argv, &config);
   AuroraShutdownGuard shutdownGuard(aurora_shutdown);
 
-  run_aurora_frame_loop(aurora_update, aurora_begin_frame, aurora_end_frame);
+  FrameLoopCallbacks callbacks = {
+    .update = aurora_update,
+    .beginFrame = aurora_begin_frame,
+    .endFrame = aurora_end_frame,
+    .bootstrap = initialize_melee_host,
+    .tick = update_melee_host
+  };
+
+  if (run_aurora_frame_loop(callbacks) != 0) {
+    return 1;
+  }
 
   return 0;
 }

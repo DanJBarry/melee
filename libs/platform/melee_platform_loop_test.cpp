@@ -11,6 +11,9 @@ int beginCalls = 0;
 int endCalls = 0;
 bool beginResult = true;
 int shutdownCalls = 0;
+int bootstrapCalls = 0;
+int tickCalls = 0;
+bool bootstrapResult = true;
 
 const AuroraEvent* update() {
   ++updateCalls;
@@ -37,21 +40,42 @@ void reset() {
   endCalls = 0;
   beginResult = true;
   shutdownCalls = 0;
+  bootstrapCalls = 0;
+  tickCalls = 0;
+  bootstrapResult = true;
 }
 
 bool expect(bool condition) {
   return condition;
 }
+
+bool bootstrap() {
+  ++bootstrapCalls;
+  return bootstrapResult;
+}
+
+void tick() {
+  ++tickCalls;
+}
 }  // namespace
 
 int main() {
+  FrameLoopCallbacks callbacks = {
+      .update = update,
+      .beginFrame = beginFrame,
+      .endFrame = endFrame,
+      .bootstrap = bootstrap,
+      .tick = tick
+  };
+
   reset();
   {
     AuroraShutdownGuard shutdownGuard(shutdown);
-    run_aurora_frame_loop(update, beginFrame, endFrame);
+    run_aurora_frame_loop(callbacks);
   }
   if (!expect(updateCalls == 3) || !expect(beginCalls == 3) ||
-      !expect(endCalls == 3) || !expect(shutdownCalls == 1)) {
+      !expect(endCalls == 3) || !expect(bootstrapCalls == 1) ||
+      !expect(tickCalls == 3) || !expect(shutdownCalls == 1)) {
     return 1;
   }
 
@@ -59,18 +83,28 @@ int main() {
   events = exitEvents;
   {
     AuroraShutdownGuard shutdownGuard(shutdown);
-    run_aurora_frame_loop(update, beginFrame, endFrame);
+    run_aurora_frame_loop(callbacks);
   }
   if (!expect(updateCalls == 1) || !expect(beginCalls == 0) ||
-      !expect(endCalls == 0) || !expect(shutdownCalls == 1)) {
+      !expect(endCalls == 0) || !expect(bootstrapCalls == 1) ||
+      !expect(tickCalls == 0) || !expect(shutdownCalls == 1)) {
     return 1;
   }
 
   reset();
   beginResult = false;
-  run_aurora_frame_loop(update, beginFrame, endFrame);
+  run_aurora_frame_loop(callbacks);
   if (!expect(updateCalls == 3) || !expect(beginCalls == 3) ||
-      !expect(endCalls == 0)) {
+      !expect(endCalls == 0) || !expect(tickCalls == 0)) {
+    return 1;
+  }
+
+  reset();
+  bootstrapResult = false;
+  if (!expect(run_aurora_frame_loop(callbacks) == 1) ||
+      !expect(updateCalls == 0) || !expect(beginCalls == 0) ||
+      !expect(endCalls == 0) || !expect(tickCalls == 0) ||
+      !expect(bootstrapCalls == 1)) {
     return 1;
   }
 

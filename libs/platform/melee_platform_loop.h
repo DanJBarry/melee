@@ -7,6 +7,8 @@ using AuroraUpdateFunction = const AuroraEvent* (*)();
 using AuroraBeginFrameFunction = bool (*)();
 using AuroraEndFrameFunction = void (*)();
 using AuroraShutdownFunction = void (*)();
+using MeleeBootstrapFunction = bool (*)();
+using MeleeTickFunction = void (*)();
 
 class AuroraShutdownGuard {
  public:
@@ -19,8 +21,14 @@ class AuroraShutdownGuard {
     AuroraShutdownFunction shutdown_;
 };
 
-int run_aurora_frame_loop(AuroraUpdateFunction update,
-                          AuroraBeginFrameFunction beginFrame,
-                          AuroraEndFrameFunction endFrame);
+struct FrameLoopCallbacks {
+    AuroraUpdateFunction update;
+    AuroraBeginFrameFunction beginFrame;
+    AuroraEndFrameFunction endFrame;
+    MeleeBootstrapFunction bootstrap = nullptr;
+    MeleeTickFunction tick = nullptr;
+};
+
+int run_aurora_frame_loop(const FrameLoopCallbacks& callbacks);
 
 #endif
