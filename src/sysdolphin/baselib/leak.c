@@ -128,28 +128,29 @@ int HSD_Leak_80387DF8(int indent)
         } else if (scan <= heap_start_phys && heap_start_phys < (u32*) val) {
         } else if (heap_start_phys != NULL) {
             u32* block = heap_start_phys;
-            if (block[0] == HEAP_MAGIC) {
-                u32 reg_idx = block[1];
+            do {
+                if (block[0] == HEAP_MAGIC) {
+                    u32 reg_idx = block[1];
                 if ((u32) (reg_idx + 0x10000) != 0xFFFF && reg_idx < *cap_ptr)
-                {
-                    if ((u32) heap_start_phys ==
-                        *(u32*) ((u32) lc->table + (reg_idx << 2)))
                     {
-                        HSD_LeakReportSpaces(i);
-                        OSReport(
-                            "leak detected (%p) nb_reg (%d) mark (%08x)\n",
-                            (u32*) ((u32) heap_start_phys + 0x20), block[2],
-                            block[3]);
-                        goto next_leak;
+                        if ((u32) heap_start_phys ==
+                            *(u32*) ((u32) lc->table + (reg_idx << 2)))
+                        {
+                            HSD_LeakReportSpaces(i);
+                            OSReport(
+                                "leak detected (%p) nb_reg (%d) mark (%08x)\n",
+                                (u32*) ((u32) heap_start_phys + 0x20), block[2],
+                                block[3]);
+                            break;
+                        }
                     }
                 }
-            }
-            for (j = 0; j < i; j++) {
-                OSReport(" ");
-            }
-            OSReport("leak detected (%p) [destroyed header]\n",
-                     (u32*) ((u32) heap_start_phys + 0x20));
-        next_leak:
+                for (j = 0; j < i; j++) {
+                    OSReport(" ");
+                }
+                OSReport("leak detected (%p) [destroyed header]\n",
+                         (u32*) ((u32) heap_start_phys + 0x20));
+            } while (0);
             leak_count++;
         }
     }
