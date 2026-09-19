@@ -359,7 +359,7 @@ cflags_trk = [
 
 includes_base = [
     "src",
-    "src/MSL",
+    "libs/MSL",
     "libs/dolphin/include",
     f"build/{config.version}/include",
 ]
@@ -372,7 +372,7 @@ config.linker_version = "GC/1.3.2"
 clang_includes = ["src"]
 
 clang_system_includes = [
-    "src/MSL",
+    "libs/MSL",
     "libs/dolphin/include",
     "libs/dolphin/src",
     f"build/{config.version}/include",

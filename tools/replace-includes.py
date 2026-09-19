@@ -4,13 +4,14 @@ import argparse
 import logging
 import re
 from pathlib import Path
+from typing import Optional
 
 IN_ROOTS = [
     Path.cwd().joinpath(s).resolve(strict=True)
     for s in [
         "src",
-        "src/Runtime",
-        "src/MSL",
+        "libs/Runtime",
+        "libs/MSL",
         "src/melee",
         "src/melee/ft/kinds",
         "libs/dolphin/include",
@@ -20,7 +21,7 @@ IN_ROOTS = [
 ]
 
 OUT_ROOTS = [
-    IN_ROOTS[2],  # src/MSL
+    IN_ROOTS[2],  # libs/MSL
     IN_ROOTS[0],  # src
     IN_ROOTS[5],  # libs/dolphin/include
     IN_ROOTS[7],  # build/GALE01/include
@@ -102,7 +103,7 @@ def rewrite_file(src_path: Path) -> None:
             logging.info("Replaced `%s`", s)
             return s
 
-        def search_relative() -> str | None:
+        def search_relative() -> Optional[str]:
             if src_path.suffix == ".c" and mp.is_relative_to(src_path.parent):
                 logging.info(
                     "Relative include: `%s`", p := mp.relative_to(src_path.parent)
@@ -110,12 +111,12 @@ def rewrite_file(src_path: Path) -> None:
                 return put(p)
             return None
 
-        def search_sus() -> str | None:
+        def search_sus() -> Optional[str]:
             if mp.suffix not in {".c", ".h", ".inc"}:
                 return put(mp)
             return None
 
-        def search_roots() -> str | None:
+        def search_roots() -> Optional[str]:
             for root in in_roots:
                 logging.debug("Trying `%s` / `%s`", root, str(mp))
                 try:
