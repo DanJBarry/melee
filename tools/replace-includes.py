@@ -4,7 +4,6 @@ import argparse
 import logging
 import re
 from pathlib import Path
-from typing import Optional
 
 IN_ROOTS = [
     Path.cwd().joinpath(s).resolve(strict=True)
@@ -103,7 +102,7 @@ def rewrite_file(src_path: Path) -> None:
             logging.info("Replaced `%s`", s)
             return s
 
-        def search_relative() -> Optional[str]:
+        def search_relative() -> str | None:
             if src_path.suffix == ".c" and mp.is_relative_to(src_path.parent):
                 logging.info(
                     "Relative include: `%s`", p := mp.relative_to(src_path.parent)
@@ -111,12 +110,12 @@ def rewrite_file(src_path: Path) -> None:
                 return put(p)
             return None
 
-        def search_sus() -> Optional[str]:
+        def search_sus() -> str | None:
             if mp.suffix not in {".c", ".h", ".inc"}:
                 return put(mp)
             return None
 
-        def search_roots() -> Optional[str]:
+        def search_roots() -> str | None:
             for root in in_roots:
                 logging.debug("Trying `%s` / `%s`", root, str(mp))
                 try:

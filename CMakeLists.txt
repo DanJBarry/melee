@@ -16,6 +16,8 @@ file(GLOB_RECURSE SOURCES "src/melee/**.c" LIST_DIRECTORIES FALSE)
 file(GLOB_RECURSE HSD_SOURCES "src/sysdolphin/**.c" LIST_DIRECTORIES FALSE)
 set(SOURCES ${SOURCES} ${HSD_SOURCES})
 
+add_compile_definitions(TARGET_PC)
+
 set(EXCLUSIONS
     "melee/db/dberror.c" # OSContext register usage
     "melee/gm/gmmain.c" # CARDInit
@@ -77,7 +79,7 @@ add_executable(melee-platform
     libs/platform/melee_platform_adapter.cpp
     libs/platform/melee_platform_loop.cpp
 )
-target_link_libraries(melee-platform PRIVATE melee-aurora)
+target_link_libraries(melee-platform PRIVATE melee-aurora melee)
 target_include_directories(melee-platform PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include
     ${CMAKE_CURRENT_SOURCE_DIR}/libs/borealis/include
@@ -95,7 +97,7 @@ if(BUILD_TESTING)
         libs/platform/melee_platform_adapter.cpp
         libs/platform/melee_platform_adapter_test.cpp
     )
-    target_link_libraries(melee-platform-adapter-test PRIVATE borealis::io borealis::log)
+    target_link_libraries(melee-platform-adapter-test PRIVATE borealis::io borealis::log melee)
     target_link_libraries(melee-platform-loop-test PRIVATE aurora::core)
     target_include_directories(melee-platform-loop-test PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/libs/aurora/include

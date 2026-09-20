@@ -2,6 +2,21 @@
 #define SYSDOLPHIN_BASELIB_FORWARD_H
 
 #include <Runtime/platform.h>
+#ifdef TARGET_PC
+#include <dolphin/mtx.h>
+typedef Vec Vec3;
+typedef struct { f32 x, y; } Vec2, *Vec2Ptr, Point2d, *Point2dPtr;
+typedef struct { s8 x, y, z; } S8Vec3, S8Vec, *S8Vec3Ptr, *S8VecPtr;
+typedef struct { u8 x, y, z, w; } U8Vec4, *U8Vec4Ptr;
+typedef S16Vec S16Vec3;
+typedef S16VecPtr S16Vec3Ptr;
+typedef struct { int x, y; } IntVec2, *IntVec2Ptr;
+typedef struct { s32 x, y; } S32Vec2, *S32Vec2Ptr;
+typedef struct { int x, y, z; } IntVec3, *IntVec3Ptr;
+typedef struct { s32 x, y, z; } S32Vec, S32Vec3, *S32VecPtr, *S32Vec3Ptr;
+typedef Quaternion Vec4;
+#endif
+
 
 typedef struct GObjFuncs GObjFuncs;
 typedef struct HSD_AnimJoint HSD_AnimJoint;

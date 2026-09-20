@@ -3,6 +3,11 @@
 #include <borealis/io.hpp>
 #include <borealis/log.hpp>
 
+extern "C" {
+void melee_main(void);
+void melee_game_tick(void);
+}
+
 namespace {
 struct MeleeHostState {
   bool initialized = false;
@@ -19,6 +24,7 @@ bool initialize_melee_host() {
   }
 
   kLog.info("successfully initialized game data at {}", kGameDataPath);
+  melee_main();
   state.initialized = true;
   return true;
 }
@@ -27,4 +33,5 @@ void update_melee_host() {
   if (!state.initialized) {
     return;
   }
+  melee_game_tick();
 }

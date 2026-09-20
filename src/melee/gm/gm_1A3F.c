@@ -380,6 +380,7 @@ void gm_801A4510(void)
     }
     state_machine.routing.prev_mode = GM_COUNT;
 
+#ifdef __MWERKS__
     while (true) {
         u8 next_mode = runGameMode(state_machine.routing.curr_mode);
         if (gmMainLib_8046B0F0.resetting) {
@@ -388,4 +389,18 @@ void gm_801A4510(void)
         gamestate->routing.prev_mode = gamestate->routing.curr_mode;
         gamestate->routing.curr_mode = next_mode;
     }
+#endif
 }
+
+#ifdef TARGET_PC
+void melee_game_tick(void)
+{
+    struct stateMachine* gamestate = &state_machine;
+    u8 next_mode = runGameMode(state_machine.routing.curr_mode);
+    if (gmMainLib_8046B0F0.resetting) {
+        gmMainLib_8046B0F0.resetting = false;
+    }
+    gamestate->routing.prev_mode = gamestate->routing.curr_mode;
+    gamestate->routing.curr_mode = next_mode;
+}
+#endif

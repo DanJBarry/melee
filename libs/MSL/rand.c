@@ -1,4 +1,7 @@
 #include "stdlib.h"
+#ifdef __MWERKS__
+#include <dolphin/types.h>
+#endif
 
 static u32 next = 1;
 

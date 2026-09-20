@@ -127,10 +127,15 @@ static void init_spr_unk(void)
 void __eabi(void) {}
 #endif
 
+#ifdef TARGET_PC
+void melee_main(void)
+#else
 int main(void)
+#endif
 {
     char* unused_format_string = "Data %lx\n";
     u32 _[2];
+
 
     OSInit();
     VIInit();

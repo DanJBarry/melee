@@ -6,8 +6,16 @@
 #include "trk.h"
 #endif
 
+#ifdef __MWERKS__
+#include <dolphin/amc/AmcExi2Comm.h>
+#include <dolphin/db/DBInterface.h>
+#include <dolphin/odemu/odemu.h>
+#endif
+
+#ifdef TARGET_PC
 #include <dolphin/db.h>
 #include <dolphin/os.h>
+#endif
 #include <dolphin/os/OSThread.h>
 
 static DBCommTable gDBCommTable = { NULL, NULL, NULL, NULL, NULL, NULL, NULL };

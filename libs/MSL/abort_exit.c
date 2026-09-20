@@ -1,5 +1,9 @@
 #include <Runtime/platform.h>
 
+#ifdef __MWERKS__
+#include <dolphin/os/init/__ppc_eabi_init.h>
+#endif
+
 void __destroy_global_chain(void);
 void __kill_critical_regions(void);
 extern void __fini_cpp_exceptions(void);
